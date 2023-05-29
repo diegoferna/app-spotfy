@@ -34,7 +34,7 @@ ul {
 }
 
 body {
-  background: #121212;
+  background: #000;
 }
 
 #app {

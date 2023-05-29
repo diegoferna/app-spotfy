@@ -1,9 +1,24 @@
 <template>
-  <div class="home">
-    <search-bar @search-genres="recebeArray"></search-bar>
-    <ul class="container_cards" v-if="genres.length > 0">
+  <div class="container_cards">
+    <search-bar @search-genres="getDados"></search-bar>
+    <ul class="container_cards_box" v-if="genres.length > 0">
       <li v-for="(album, index) in genres" :key="index">
-        <router-link to="/tracks">
+        <router-link
+          :to="{
+            name: 'album',
+            params: {
+              albumData: {
+                id: album.id,
+                albumName: album.name,
+                albumImg: album.images[0].url,
+                albumArtist: album.artists[0].name,
+                albumUrl: album.artists[0].external_urls.spotify,
+                albumTotalTracks: album.total_tracks,
+                albumYear: album.release_date,
+              },
+            },
+          }"
+        >
           <album-card-vue
             :albumArtist="album.artists[0].name"
             :albumName="album.name"
@@ -12,9 +27,10 @@
           ></album-card-vue>
         </router-link>
       </li>
+      <router-view></router-view>
     </ul>
     <div v-else class="empty_search">
-      <h1>EXPERIMENTE USAR A BARRA DE PESQUISA</h1>
+      <img class="empty_search_img" src="../assets/horizon.png" alt="" />
     </div>
   </div>
 </template>
@@ -35,21 +51,24 @@ export default {
   },
 
   methods: {
-    recebeArray(dado) {
+    getDados(dado) {
       this.genres = dado;
     },
   },
 };
 </script>
 <style scoped>
-.home {
-  width: 100%;
+.container_cards {
+  width: 1240px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  margin: 20px auto 0 auto;
+  padding-top: 20px;
+  background: #121212;
+  border-radius: 1%;
 }
-.container_cards {
+.container_cards_box {
   display: flex;
   flex-wrap: wrap;
   max-width: 1240px;
@@ -57,16 +76,24 @@ export default {
 
 .empty_search {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
+  height: 80vh;
 }
 
-.empty_search h1 {
-  font-weight: bold;
-  color: #fff;
-  font-size: 30px;
+.empty_search_img {
+  width: 300px;
+  height: ;
+}
+
+@media screen and (max-width: 900px) {
+  .container_cards_box {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1000px;
+  }
 }
 </style>
 

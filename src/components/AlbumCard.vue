@@ -34,6 +34,7 @@ export default {
       type: String,
     },
   },
+
   filters: {
     releaseYear(year) {
       return year.slice(0, 4);

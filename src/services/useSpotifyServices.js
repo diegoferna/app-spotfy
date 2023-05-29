@@ -14,7 +14,7 @@ function useSpotifyServices(clientId, clientSecret) {
             });
 
             const data = await response.json();
-            token.value = data.access_token
+            return token.value = data.access_token
         } catch (error) {
             console.error("Error retrieving access token:", error);
         }
@@ -26,7 +26,6 @@ function useSpotifyServices(clientId, clientSecret) {
 
 
     async function getGenres(searchTerm) {
-
         try {
             const response = await fetch(
                 `https://api.spotify.com/v1/search?q=${searchTerm}&type=album&limit=10`,
@@ -37,7 +36,7 @@ function useSpotifyServices(clientId, clientSecret) {
             );
 
             const data = await response.json();
-            return data.albums.items;
+            return data.albums.items || [];
         } catch (error) {
             console.error("Error retrieving genres:", error);
             return [];
@@ -45,27 +44,43 @@ function useSpotifyServices(clientId, clientSecret) {
     }
 
     async function getAlbumTracks(albumId) {
+        await getToken()
         try {
             const response = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks`, {
                 method: "GET",
                 headers: {
-                    Authorization: "Bearer " + token.value,
-                    Accept: "application/json"
+                    Authorization: "Bearer " + ' ' + token.value,
                 }
-            });
+            })
 
-            if (response.ok) {
-                const data = await response.json();
-                const tracks = data.items;
-                return tracks;
-            } else {
-                throw new Error("Failed to retrieve album tracks");
-            }
-        } catch (error) {
+            const data = await response.json();
+            return data.items || [];
+        }
+        catch (error) {
             console.error("Error retrieving album tracks:", error);
             return [];
         }
     }
+
+    async function getAudioTrack(trackId) {
+        await getToken()
+
+        try {
+            const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+                method: "GET",
+                headers: {
+                    Authorization: "Bearer " + ' ' + token.value,
+                }
+            })
+
+            const data = await response.json();
+            return data
+        }
+        catch (error) {
+            console.error('Erro ao obter detalhes da faixa:', error);
+        }
+    }
+
 
     onMounted(async () => {
         await getToken();
@@ -75,6 +90,7 @@ function useSpotifyServices(clientId, clientSecret) {
         token,
         getGenres,
         getAlbumTracks,
+        getAudioTrack,
         refreshToken
     };
 }
